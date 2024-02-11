@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-pub" "context" $) }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  hosts:
+  - "rs.{{ .Values.vs.baseDomain }}"
+  - "as.{{ .Values.vs.baseDomain }}"
+  - "od.{{ .Values.vs.baseDomain }}"
+  gateways:
+  - istio-system/nlb-pub
+  - mesh
+  tls:
+  - match:
+    - sniHosts:
+      - "rs.{{ .Values.vs.baseDomain }}"
+      - "as.{{ .Values.vs.baseDomain }}"
+      - "od.{{ .Values.vs.baseDomain }}"
+    route:
+    - destination:
+        host: {{ include "helpers.svc.fqdn" $ }}
+        port: 
+          number: 4000
+  

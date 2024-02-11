@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-priv" "context" $) }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  hosts:
+  - "cm.{{ .Values.vs.baseDomain }}"
+  - "hh.{{ .Values.vs.baseDomain }}"
+  gateways:
+  - istio-system/nlb-priv
+  - mesh
+  tls:
+  - match:
+    - sniHosts:
+      - "cm.{{ .Values.vs.baseDomain }}"
+      - "hh.{{ .Values.vs.baseDomain }}"
+    route:
+    - destination:
+        host: {{ include "helpers.svc.fqdn" $ }}
+        port: 
+          number: 2000
+  

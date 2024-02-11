@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "helpers.app.fullname" (dict "name" "ingress-alb-pub" "context" $) }}
+  namespace: istio-system
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: alb-pub
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+  labels:
+    {{- include "helpers.app.labels" $ | nindent 4 }}
+spec:
+  tls:
+    - hosts: 
+      - "admin.{{ .Values.vs.baseDomain }}"
+      - "self-service.{{ .Values.vs.baseDomain }}"
+      - "dev-portal.{{ .Values.vs.baseDomain }}"
+      - "git-hook.{{ .Values.vs.baseDomain }}"
+      - "tempad.{{ .Values.vs.baseDomain }}"
+      secretName: istio-selfsigned-certs
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: istio-alb-pub
+                port:
+                  number: 443

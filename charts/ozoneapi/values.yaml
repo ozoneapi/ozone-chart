@@ -1,0 +1,44 @@
+generic:
+  hub: hub
+  stage: preprod 
+  environment: sandbox
+  tenant: changement
+  connector: changeme-connectors
+  connectorVersion: develop
+  annotations: {}
+  extraSelectorLabels: {}
+  podLabels: {}
+  podAnnotations: {}
+  extraImagePullSecrets: {}
+
+envs: {}
+
+envsString: ""
+
+deployment: 
+  replicas: 1
+  image: 035357678313.dkr.ecr.eu-west-2.amazonaws.com/production/common/changeme
+  imageTag: changeme
+  resources:
+    limits: 
+      cpu: 0.4
+      memory: 256Mi
+    requests:
+      memory: 128Mi
+  volumes:
+    logs:
+      emptyDir: 
+        sizeLimit: 512Mi
+  securityContext:
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true 
+    runAsNonRoot: true
+    runAsUser: 9001
+    runAsGroup: 9001
+
+vs:
+  baseDomain: changeme.env.hub-stage.ozoneapi.io
+
+
+

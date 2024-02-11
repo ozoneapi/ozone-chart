@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-nginx-public
+  namespace: {{ $.Release.Namespace }}
+data:
+{{ (tpl (.Files.Glob "files/public/*").AsConfig .) | indent 2 }}

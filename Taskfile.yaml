@@ -1,0 +1,65 @@
+version: '3'
+# These are only for rapid iteration in a test cluster
+# for proper deployment use helm and argoCD via the gitops flow
+tasks:
+
+  kubeconfig:
+    internal: true
+    preconditions:
+      - sh: test -n "${KUBECONFIG}"
+        msg: "KUBECONFIG is not set"
+
+  apply:
+    desc: "Apply the helm chart"
+    cmds:
+      - cmd: kubectl create ns tester
+        ignore_error: true
+      - helm template --namespace tester --create-namespace --release-name tester {{.USER_WORKING_DIR}} | kubectl apply -f -
+    deps: [kubeconfig, dryrun]
+
+  destroy:
+    desc: "Destroy the helm chart resources and namespace"
+    prompt: Destroy all resources? 
+    cmds:
+      - cmd: helm template --namespace tester --release-name tester {{.USER_WORKING_DIR}} | kubectl delete -f -
+        ignore_error: true
+      - kubectl delete ns tester
+    deps: [kubeconfig, dryrun]
+
+  dryrun: 
+    desc: "Check the helm chart produces valid YAMLs which kubectl will accept"
+    cmds: 
+      - helm template --namespace tester --release-name tester {{.USER_WORKING_DIR}} | kubectl apply --dry-run=client -f -
+
+  render:
+    desc: "Render the helm chart to YAML in stdout"
+    cmds:
+      - helm template --namespace tester --create-namespace --release-name tester {{.USER_WORKING_DIR}}
+
+  watch:
+    desc: "Continously watch the output of helm render. If you pass in an argument the output will be grepped to around that pattern. "
+    summary: |
+      Continously watch the output of helm render. If you pass in an argument the output will be grepped to around that pattern.
+      Example: 
+        task watch -- ingress
+    cmds: 
+      - |
+        grep=""
+        if [ "{{.CLI_ARGS}}" != "" ]; then
+          grep="| grep -B 5 -A 100 {{.CLI_ARGS}}"
+        fi
+        watch helm template --namespace tester --create-namespace --release-name tester {{.USER_WORKING_DIR}} $grep
+
+  debug:
+    desc: "Continously watch the output of helm render with the debug flag set. If you pass in an argument the output will be grepped to around that pattern. "
+    summary: |
+      Continously watch the output of helm render. If you pass in an argument the output will be grepped to around that pattern.
+      Example: 
+        task watch -- ingress
+    cmds: 
+      - |
+        grep=""
+        if [ "{{.CLI_ARGS}}" != "" ]; then
+          grep="| grep -B 5 -A 100 {{.CLI_ARGS}}"
+        fi
+        watch helm template --namespace tester --create-namespace --debug --release-name tester {{.USER_WORKING_DIR}} $grep

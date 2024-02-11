@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helpers.app.fullname" (dict "name" "svc" "context" $) }}
+  namespace: {{ $.Release.Namespace }}
+  labels: 
+    {{- include "helpers.app.labels" $ | nindent 4 }}
+  annotations: 
+    {{- include "helpers.app.genericAnnotations" $ | indent 4 }}
+spec: 
+  type: ClusterIP
+  selector:
+    {{- include "helpers.app.selectorLabels" $ | nindent 4 }}
+  ports:
+  - name: https-hhcm
+    port: 2000
+    targetPort: 2000
+    protocol: TCP
+  - name: http-admin
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  - name: http-self-service
+    port: 3001
+    targetPort: 3001
+    protocol: TCP
+  - name: http-dev-portal
+    port: 3002
+    targetPort: 3002
+    protocol: TCP
+  - name: http-git-hook
+    port: 3003
+    targetPort: 3003
+    protocol: TCP
+  - name: https-asrsod
+    port: 4000
+    targetPort: 4000
+    protocol: TCP
+  - name: http-health
+    port: 4001
+    targetPort: 4001
+    protocol: TCP
+  - name: http-tempad
+    port: 4600
+    targetPort: 4600
+    protocol: TCP
+  - name: http-auto-auth
+    port: 4900
+    targetPort: 4900
+    protocol: TCP     
