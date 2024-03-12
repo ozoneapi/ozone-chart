@@ -1,14 +1,14 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-priv" "context" $) }}
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-pub-hhcm" "context" $) }}
   namespace: {{ $.Release.Namespace }}
 spec:
   hosts:
   - "cm.{{ .Values.vs.baseDomain }}"
   - "hh.{{ .Values.vs.baseDomain }}"
   gateways:
-  - istio-system/nlb-priv
+  - istio-system/nlb-pub
   - mesh
   tls:
   - match:

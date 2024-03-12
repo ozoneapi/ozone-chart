@@ -1,13 +1,13 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "helpers.app.fullname" (dict "name" "vs-alb-pub-self-service" "context" $) }}
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-pub-self-service" "context" $) }}
   namespace: {{ $.Release.Namespace }}
 spec:
   hosts:
   - "self-service.{{ .Values.vs.baseDomain }}"
   gateways:
-  - istio-system/alb-pub
+  - istio-system/nlb-pub
   - mesh
   http:
   - match:

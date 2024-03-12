@@ -1,13 +1,13 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "helpers.app.fullname" (dict "name" "vs-alb-pub-git-hook" "context" $) }}
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-pub-admin" "context" $) }}
   namespace: {{ $.Release.Namespace }}
 spec:
   hosts:
-  - "git-hook.{{ .Values.vs.baseDomain }}"
+  - "admin.{{ .Values.vs.baseDomain }}"
   gateways:
-  - istio-system/alb-pub
+  - istio-system/nlb-pub
   - mesh
   http:
   - match:
@@ -17,4 +17,4 @@ spec:
     - destination:
         host: {{ include "helpers.svc.fqdn" $ }}
         port: 
-          number: 3003
+          number: 3000

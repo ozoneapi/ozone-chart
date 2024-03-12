@@ -1,13 +1,13 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "helpers.app.fullname" (dict "name" "vs-alb-pub-admin" "context" $) }}
+  name: {{ include "helpers.app.fullname" (dict "name" "vs-nlb-pub-tempad" "context" $) }}
   namespace: {{ $.Release.Namespace }}
 spec:
   hosts:
-  - "admin.{{ .Values.vs.baseDomain }}"
+  - "tempad.{{ .Values.vs.baseDomain }}"
   gateways:
-  - istio-system/alb-pub
+  - istio-system/nlb-pub
   - mesh
   http:
   - match:
@@ -17,4 +17,4 @@ spec:
     - destination:
         host: {{ include "helpers.svc.fqdn" $ }}
         port: 
-          number: 3000
+          number: 4600

@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cm-nginx-internal
-  namespace: {{ $.Release.Namespace }}
-data:
-{{ (tpl (.Files.Glob "files/internal/*").AsConfig .) | indent 2 }}
